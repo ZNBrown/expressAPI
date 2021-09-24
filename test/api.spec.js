@@ -5,7 +5,6 @@ const server = require('../server/server');
 
 describe('API server', () => {
     let api;
-    let api;
     let testActivity ={
         activity: "breath", priority: "high", 
         dueDate: 270921, status: "pending"
