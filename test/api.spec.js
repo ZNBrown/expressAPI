@@ -18,18 +18,24 @@ describe('API server', () => {
         api.close(done);
     });
 
-    it('status 200 from getting index', (done) => {
+    it('GET /, status 200', (done) => {
         request(api)
             .get('/')
             .expect(200, done);
     });
 
-    it('responds with json', function(done) {
+    it('GET /, responds with json', function(done) {
         request(api)
-        .get('/')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(200, done);
+            .get('/')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200, done);
+    });
+
+    it('GET nonexistent route ', function(done) {
+        request(api)
+        .get('/fake')
+        .expect(404, done);
     });
 
 
