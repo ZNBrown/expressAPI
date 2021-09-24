@@ -64,11 +64,13 @@ describe('API server', () => {
 
     it('POST specific activity confirmation', function(done) {
         request(api)
-        .post('/list/1')
+        .post('/list')
+        .send(testActivity)
         .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json')
         .expect('Content-Type', /json/)
-        .expect(201)
-        .expect({ message: `Of ${testActivity.priority} importance, ${testActivity.activity} due on ${testActivity.dueDate} has been added to your To Do List`}, done);
+        .expect({ message: `Of ${testActivity.priority} importance, ${testActivity.activity} due on ${testActivity.dueDate} has been added to your To Do List`})
+        .expect(201, done);
     });
 
     it('GET unknown acticity results in 404', (done) => {
@@ -76,12 +78,12 @@ describe('API server', () => {
     });
 
 
-    it('DELETE list/:id with has status 204', async () => {
-        await request(api).delete('/list/4').expect(204);
+    it('DELETE list/:id with has status 201', async () => {
+        await request(api).delete('/list/2').expect(201).expect({ message: "Item with ID: 2 deleted."});
 
-        const updatedList = await request(api).get('/list');
+        // const updatedList = await request(api).get('/list');
 
-        expect(updatedList.body.length).toBe(3);
+        // expect(updatedList.body.length).toBe(2);
     });
 
 
