@@ -1,1 +1,0 @@
-const itemsData = require("../data");
