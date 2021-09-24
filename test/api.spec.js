@@ -24,5 +24,13 @@ describe('API server', () => {
             .expect(200, done);
     });
 
+    it('responds with json', function(done) {
+        request(api)
+        .get('/')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200, done);
+    });
+
 
 });
