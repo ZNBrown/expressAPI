@@ -1,14 +1,17 @@
 const request = require('supertest');
 const express = require('express');
-const server = require('../server/server');
+const server = require('../server');
 
 
 describe('API server', () => {
     let api;
-    let testActivity ={
-        activity: "breath", priority: "high", 
-        dueDate: 270921, status: "pending"
-    }
+    let items = [
+        {id: 1, activity: "Call Bob for a catch up", priority: "medium", dueDate: "05/10/2021", status: "To do"},
+        {id: 2, activity: "Make birthday cake", priority: "low", dueDate: "06/10/2021", status: "Done"},
+        {id: 3, activity: "Meet with team to prepare presentation", priority: "high", dueDate: "06/10/2021", status: "In progress"}
+    ];
+    testActivity = {activity: "debug code", priority: "high", dueDate: "09/10/2021", status: "In progress"};
+    
 
     beforeAll(() => {
         api = server.listen(5000, () =>
@@ -52,21 +55,22 @@ describe('API server', () => {
 
     it('GET specific retrieves correctly', function(done) {
         request(api)
-        .get('/list/3')
+        .get('/list/1')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
-        .expect(  { id: 3, activity: "jump", priority: "low", 
-        dueDate: 270921, status: "pending" });
+        .expect(  items[0], done);
     });
 
     it('POST specific activity confirmation', function(done) {
         request(api)
-        .get('/list/1')
+        .post('/list')
+        .send(testActivity)
         .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json')
         .expect('Content-Type', /json/)
-        .expect(201)
-        .expect({ id: 4, ...testActivity }, done);
+        .expect({ message: `Of ${testActivity.priority} importance, ${testActivity.activity} due on ${testActivity.dueDate} has been added to your To Do List`})
+        .expect(201, done);
     });
 
     it('GET unknown acticity results in 404', (done) => {
@@ -74,12 +78,12 @@ describe('API server', () => {
     });
 
 
-    it('DELETE list/:id with has status 204', async () => {
-        await request(api).delete('/list/4').expect(204);
+    it('DELETE list/:id with has status 201', async () => {
+        await request(api).delete('/list/2').expect(201).expect({ message: "Item with ID: 2 deleted."});
 
-        const updatedList = await request(api).get('/list');
+        // const updatedList = await request(api).get('/list');
 
-        expect(updatedList.body.length).toBe(3);
+        // expect(updatedList.body.length).toBe(2);
     });
 
 
