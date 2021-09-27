@@ -52,25 +52,16 @@ app.post('/list', (req, res) => {
 
 //UPDATE
 app.put('/list/:lid', (req, res) => {
-    let requestedId = parseInt(req.params.lid);
-    let selectedItem;
-    let updateItem;
-    //selectedItem = items.find((item) => {item.id === requestedId});
-    //we dont know why this didnt work so made our own
-    let recieved;
-    for (let item of items) {
-        if (item.id === requestedId)
-        {
-            item = {id: item.id, ...req.body};
-            recieved = item;
-        }
+    try {
+        let requestedId = parseInt(req.params.lid);
+        let recieved = req.body;
+        let selectedItem = items.findIndex(({id}) => id === requestedId);
+        if (selectedItem === -1){ throw new Error(`item with ${selectedItem} not found, requested id: ${requestedId}, ${JSON.stringify(items.map(i => i.id))}`) }
+        items[selectedItem] = {id: requestedId, ...req.body};
+        res.status(200).json({ message: `Item updated: now reads ${recieved.priority} importance, ${recieved.activity} due on ${recieved.dueDate}.` })
     }
-    if (recieved){
-        res.status(201).json({ message: `Item updated: now reads ${recieved.priority} importance, ${recieved.activity} due on ${recieved.dueDate}.` })
-    }
-    else
-    {
-    res.status(404).json({});
+    catch (error) {
+        res.status(404).json({ message: error.message});
     }
 });
 

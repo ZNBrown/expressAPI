@@ -10,17 +10,15 @@ describe('API server', () => {
         {id: 2, activity: "Make birthday cake", priority: "low", dueDate: "06/10/2021", status: "Done"},
         {id: 3, activity: "Meet with team to prepare presentation", priority: "high", dueDate: "06/10/2021", status: "In progress"}
     ];
-    testActivity = {activity: "debug code", priority: "high", dueDate: "09/10/2021", status: "In progress"};
-    
+    let testActivity = {activity: "debug code", priority: "high", dueDate: "09/10/2021", status: "In progress"};
+    let updateActivity = {activity: "debug code", priority: "high", dueDate: "09/10/2021", status: "In progress"};
 
-    beforeAll(() => {
-        api = server.listen(5000, () =>
-            console.log('Test server running on port 5000')
-        );
+
+    beforeEach((done) => {
+        api = server.listen(5000, done);
     });
 
-
-    afterAll((done) => {
+    afterEach((done) => {
         console.log('Tearing down test');
         api.close(done);
     });
@@ -51,6 +49,7 @@ describe('API server', () => {
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200, done);
+
     });
 
     it('GET specific retrieves correctly', function(done) {
@@ -78,11 +77,29 @@ describe('API server', () => {
     });
 
 
-    it('DELETE list/:id with has status 201', async () => {
-        await request(api).delete('/list/2').expect(201).expect({ message: "Item with ID: 2 deleted."});
-        //TODO ensure we arent blindly trusting server
+    it('DELETE list/:id with has status 201', (done) => {
+        request(api).delete('/list/2').expect(201).expect({ message: "Item with ID: 2 deleted."}, done);
     });
 
 
+    it('UPDATES item 2 correctly', function(done) {
+        request(api)
+        .put('/list/2')
+        .send(updateActivity)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect({ message: `Item updated: now reads ${updateActivity.priority} importance, ${updateActivity.activity} due on ${updateActivity.dueDate}.` })
+        .expect(200, done);
+    });
+
+    it('fails to UPDATE non existant item correctly', function(done) {
+        request(api)
+        .put('/list/200')
+        .send(updateActivity)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        //.expect({})
+        .expect(404, done);
+    });
 
 });
