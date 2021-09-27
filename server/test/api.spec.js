@@ -80,10 +80,7 @@ describe('API server', () => {
 
     it('DELETE list/:id with has status 201', async () => {
         await request(api).delete('/list/2').expect(201).expect({ message: "Item with ID: 2 deleted."});
-
-        // const updatedList = await request(api).get('/list');
-
-        // expect(updatedList.body.length).toBe(2);
+        //TODO ensure we arent blindly trusting server
     });
 
 

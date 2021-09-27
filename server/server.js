@@ -20,10 +20,10 @@ app.get('/list', (req, res) => {
 });
 
 app.get('/list/:lid', (req, res) => {
-    // console.log(request.params);
     let requestedId = parseInt(req.params.lid);
     let selectedItem;
-    // = items.find((item) => {item.id === requestedId});
+    //selectedItem = items.find((item) => {item.id === requestedId});
+    //we dont know why this didnt work so made our own
     let recieved = 0;
     for (const item of items) {
         if (item.id === requestedId)
@@ -44,11 +44,7 @@ app.get('/list/:lid', (req, res) => {
 // CREATE
 app.post('/list', (req, res) => {
     let newId = items.length + 1;
-    console.log("req body is :")
-    console.log(req.body);
     let newItem = { id: newId, ...req.body }
-    console.log(newItem);
-
     items.push(newItem);
     res.status(201).json({ message: `Of ${newItem.priority} importance, ${newItem.activity} due on ${newItem.dueDate} has been added to your To Do List` })
 });
@@ -61,11 +57,7 @@ app.delete('/list/:lid', (req, res) =>{
         i++;
         if (item.id === deleteId)
         {
-            console.log("we are here" + i);
-            console.log(item.id);
-            console.log(items);
             items.splice(i-1, 1);
-            console.log(items);
             j = 1;
         }
     }
