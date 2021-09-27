@@ -49,6 +49,33 @@ app.post('/list', (req, res) => {
     res.status(201).json({ message: `Of ${newItem.priority} importance, ${newItem.activity} due on ${newItem.dueDate} has been added to your To Do List` })
 });
 
+
+//UPDATE
+app.put('/list/:lid', (req, res) => {
+    let requestedId = parseInt(req.params.lid);
+    let selectedItem;
+    let updateItem;
+    //selectedItem = items.find((item) => {item.id === requestedId});
+    //we dont know why this didnt work so made our own
+    let recieved;
+    for (let item of items) {
+        if (item.id === requestedId)
+        {
+            item = {id: item.id, ...req.body};
+            recieved = item;
+        }
+    }
+    if (recieved){
+        res.status(201).json({ message: `Item updated: now reads ${recieved.priority} importance, ${recieved.activity} due on ${recieved.dueDate}.` })
+    }
+    else
+    {
+    res.status(404).json({});
+    }
+});
+
+
+// DELETE
 app.delete('/list/:lid', (req, res) =>{
     let deleteId = parseInt(req.params.lid);
     let i = 0;
